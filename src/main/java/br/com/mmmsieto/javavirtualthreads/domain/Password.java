@@ -1,6 +1,6 @@
 package br.com.mmmsieto.javavirtualthreads.domain;
 
-public sealed interface Password permits PlainTextPassword {
+public sealed interface Password permits PlainTextPassword, SHA1Password {
 
     String value();
 

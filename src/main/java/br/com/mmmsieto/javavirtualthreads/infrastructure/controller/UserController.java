@@ -16,6 +16,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.StructuredTaskScope;
 
 @RestController
 @RequestMapping(value = "users")
@@ -84,6 +85,33 @@ public class UserController {
                     .map(it -> new ListUsers.Output(it.id(), it.email()))
                     .toList();
 
+        }
+    }
+
+    @GetMapping("/scope")
+    public List<ListUsers.Output> allListScope(@RequestParam(required = false, defaultValue = "", name = "ids") String ids) {
+
+        if (ids.isEmpty()) {
+            return this.listUsers.execute();
+        } else {
+
+            var allids = ids.split(",");
+
+            try (var scope = new StructuredTaskScope.ShutdownOnFailure()){
+                var futures = Arrays.stream(allids)
+                        .map(GetUserOfId.Input::new)
+                        .map(input -> scope.fork(() -> this.getUserOfId.execute(input)))
+                        .toList();
+
+                scope.join().throwIfFailed();
+
+                return futures.stream()
+                        .map(StructuredTaskScope.Subtask::get)
+                        .map(it -> new ListUsers.Output(it.id(), it.email()))
+                        .toList();
+            } catch (Throwable t) {
+                throw new RuntimeException(t);
+            }
         }
     }
 

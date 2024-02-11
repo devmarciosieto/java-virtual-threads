@@ -1,4 +1,4 @@
-package br.com.mmmsieto.javavirtualthreads;
+package br.com.mmmsieto.javavirtualthreads.infrastructure;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

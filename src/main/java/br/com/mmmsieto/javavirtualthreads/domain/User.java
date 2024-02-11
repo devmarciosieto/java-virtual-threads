@@ -10,4 +10,8 @@ public record User(
         return new User(IdGenerator.nextId(), email, passwordType.create(password));
     }
 
+    public static User restore(String id, String email, PasswordType passwordType, String password) {
+        return new User(id, email, passwordType.restore(password));
+    }
+
 }

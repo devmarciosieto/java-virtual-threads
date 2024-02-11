@@ -25,7 +25,9 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody CreateUserInput input) {
+    public ResponseEntity<?> create(@RequestBody CreateUserInput input,
+                                    @RequestParam(name = "latency", defaultValue = "10", required = false) int latency) throws InterruptedException {
+        Thread.sleep(latency);
         try {
             final var output = createUser.execute(new CreateUser.Input(input.email(), input.passwordType(), input.password()));
             return ResponseEntity.created(URI.create(STR."/users/\{output.userId()}")).body(output);
